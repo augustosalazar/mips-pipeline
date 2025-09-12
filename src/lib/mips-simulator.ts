@@ -14,6 +14,7 @@ export interface PipelineStage {
 export interface SimulationState {
   clockCycle: number;
   pipeline: PipelineStage[];
+  history: Record<'IF' | 'ID' | 'EX' | 'MEM' | 'WB', (Instruction | null)[]>;
 }
 
 const STAGE_NAMES: ('IF' | 'ID' | 'EX' | 'MEM' | 'WB')[] = ['IF', 'ID', 'EX', 'MEM', 'WB'];
@@ -90,12 +91,28 @@ export function initializeSimulation(instructions: Instruction[]): SimulationSta
       stage,
       instruction: null,
     })),
+    history: {
+      IF: [],
+      ID: [],
+      EX: [],
+      MEM: [],
+      WB: [],
+    }
   };
 }
 
 export function step(currentState: SimulationState, instructions: Instruction[]): SimulationState {
   const newPipeline: PipelineStage[] = JSON.parse(JSON.stringify(currentState.pipeline));
+  const newHistory = JSON.parse(JSON.stringify(currentState.history));
   const nextClockCycle = currentState.clockCycle + 1;
+
+  // Log current state to history before advancing
+  newHistory.IF.push(newPipeline[0].instruction);
+  newHistory.ID.push(newPipeline[1].instruction);
+  newHistory.EX.push(newPipeline[2].instruction);
+  newHistory.MEM.push(newPipeline[3].instruction);
+  newHistory.WB.push(newPipeline[4].instruction);
+
 
   // WB stage gets instruction from MEM stage
   newPipeline[4].instruction = newPipeline[3].instruction;
@@ -121,5 +138,6 @@ export function step(currentState: SimulationState, instructions: Instruction[])
     ...currentState,
     clockCycle: nextClockCycle,
     pipeline: newPipeline,
+    history: newHistory,
   };
 }

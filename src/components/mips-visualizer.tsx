@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { InstructionInput } from './instruction-input';
 import { PipelineDisplay } from './pipeline-display';
-import { DatapathDiagram } from './datapath-diagram';
+import { PipelineHistory } from './pipeline-history';
 import type { Instruction, SimulationState, SimulationMode } from '@/lib/mips-simulator';
 import { initializeSimulation, parseInstructions, step } from '@/lib/mips-simulator';
 import { validateInstructionsAction } from '@/app/actions';
@@ -85,8 +85,8 @@ const MipsVisualizer = () => {
         </Card>
         <Card>
           <CardContent className="p-6">
-            <h2 className="text-2xl font-semibold font-headline mb-4">Datapath</h2>
-            <DatapathDiagram />
+            <h2 className="text-2xl font-semibold font-headline mb-4">Pipeline History</h2>
+            <PipelineHistory history={simulation.history} />
           </CardContent>
         </Card>
       </div>
