@@ -1,32 +1,32 @@
 'use client';
-import type { Instruction } from '@/lib/mips-simulator';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import type { Instruction, PipelineRegisterName } from '@/lib/mips-simulator';
 import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
 
 interface PipelineHistoryProps {
-  history: Record<'IF' | 'ID' | 'EX' | 'MEM' | 'WB', (Instruction | null)[]>;
+  history: Record<PipelineRegisterName, (Instruction | null)[]>;
+  wbHistory: (Instruction | null)[];
 }
 
-const stageDetails = {
-    IF: { name: 'Instruction Fetch' },
-    ID: { name: 'Instruction Decode' },
-    EX: { name: 'Execute' },
-    MEM: { name: 'Memory Access' },
-    WB: { name: 'Write Back' }
+const stageDetails: Record<PipelineRegisterName | 'WB', { name: string }> = {
+    'IF/ID': { name: 'IF/ID Register' },
+    'ID/EX': { name: 'ID/EX Register' },
+    'EX/MEM': { name: 'EX/MEM Register' },
+    'MEM/WB': { name: 'MEM/WB Register' },
+    'WB': { name: 'Write Back Stage' }
 }
 
-export function PipelineHistory({ history }: PipelineHistoryProps) {
-  const stages = Object.keys(history) as ('IF' | 'ID' | 'EX' | 'MEM' | 'WB')[];
+export function PipelineHistory({ history, wbHistory }: PipelineHistoryProps) {
+  const registers = Object.keys(history) as PipelineRegisterName[];
+  const allStages = [...registers, 'WB'] as const;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-      {stages.map((stage) => (
+      {allStages.map((stage) => (
         <div key={stage}>
-          <h3 className="font-semibold text-center mb-2">{stageDetails[stage].name} ({stage})</h3>
+          <h3 className="font-semibold text-center mb-2">{stageDetails[stage].name}</h3>
           <ScrollArea className="h-64 rounded-md border bg-muted/20">
             <div className="p-2 space-y-1">
-              {history[stage].map((instr, index) => (
+              {(stage === 'WB' ? wbHistory : history[stage]).map((instr, index) => (
                 <div key={index}>
                     <div
                       className="font-mono text-xs p-1.5 rounded-sm text-center bg-background"

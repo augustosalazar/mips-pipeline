@@ -7,18 +7,27 @@ export interface Instruction {
   assembly: string;
 }
 
-export interface PipelineStage {
-  stage: 'IF' | 'ID' | 'EX' | 'MEM' | 'WB';
+export type PipelineRegisterName = 'IF/ID' | 'ID/EX' | 'EX/MEM' | 'MEM/WB';
+
+export interface PipelineRegister {
+  name: PipelineRegisterName;
   instruction: Instruction | null;
 }
 
 export interface SimulationState {
   clockCycle: number;
-  pipeline: PipelineStage[];
-  history: Record<'IF' | 'ID' | 'EX' | 'MEM' | 'WB', (Instruction | null)[]>;
+  pipeline: PipelineRegister[];
+  history: Record<PipelineRegisterName, (Instruction | null)[]>;
+  wbHistory: (Instruction | null)[];
 }
 
-const STAGE_NAMES: ('IF' | 'ID' | 'EX' | 'MEM' | 'WB')[] = ['IF', 'ID', 'EX', 'MEM', 'WB'];
+const REGISTER_NAMES_MAP: Record<PipelineRegisterName, string> = {
+  'IF/ID': 'Instruction Fetch / Instruction Decode',
+  'ID/EX': 'Instruction Decode / Execute',
+  'EX/MEM': 'Execute / Memory Access',
+  'MEM/WB': 'Memory Access / Write Back',
+};
+const PIPELINE_REGISTER_NAMES: PipelineRegisterName[] = ['IF/ID', 'ID/EX', 'EX/MEM', 'MEM/WB'];
 
 const REGISTER_NAMES = [
   'zero', 'at', 'v0', 'v1', 'a0', 'a1', 'a2', 'a3',
@@ -107,46 +116,39 @@ export function parseInstructions(hexCode: string): Instruction[] {
 export function initializeSimulation(instructions: Instruction[]): SimulationState {
   return {
     clockCycle: 0,
-    pipeline: STAGE_NAMES.map(stage => ({
-      stage,
+    pipeline: PIPELINE_REGISTER_NAMES.map(name => ({
+      name,
       instruction: null,
     })),
     history: {
-      IF: [],
-      ID: [],
-      EX: [],
-      MEM: [],
-      WB: [],
-    }
+      'IF/ID': [],
+      'ID/EX': [],
+      'EX/MEM': [],
+      'MEM/WB': [],
+    },
+    wbHistory: [],
   };
 }
 
 export function step(currentState: SimulationState, instructions: Instruction[]): SimulationState {
-  const newPipeline: PipelineStage[] = JSON.parse(JSON.stringify(currentState.pipeline));
+  const newPipeline: PipelineRegister[] = JSON.parse(JSON.stringify(currentState.pipeline));
   const newHistory = JSON.parse(JSON.stringify(currentState.history));
+  const newWbHistory = [...currentState.wbHistory];
   const nextClockCycle = currentState.clockCycle + 1;
 
   // Log current state to history before advancing
-  newHistory.IF.push(newPipeline[0].instruction);
-  newHistory.ID.push(newPipeline[1].instruction);
-  newHistory.EX.push(newPipeline[2].instruction);
-  newHistory.MEM.push(newPipeline[3].instruction);
-  newHistory.WB.push(newPipeline[4].instruction);
+  newHistory['IF/ID'].push(newPipeline[0].instruction);
+  newHistory['ID/EX'].push(newPipeline[1].instruction);
+  newHistory['EX/MEM'].push(newPipeline[2].instruction);
+  newHistory['MEM/WB'].push(newPipeline[3].instruction);
+  newWbHistory.push(newPipeline[3].instruction); // Instruction in MEM/WB is what's being written back
 
-
-  // WB stage gets instruction from MEM stage
-  newPipeline[4].instruction = newPipeline[3].instruction;
-
-  // MEM stage gets instruction from EX stage
+  // Advance pipeline
   newPipeline[3].instruction = newPipeline[2].instruction;
-  
-  // EX stage gets instruction from ID stage
   newPipeline[2].instruction = newPipeline[1].instruction;
-
-  // ID stage gets instruction from IF stage
   newPipeline[1].instruction = newPipeline[0].instruction;
   
-  // IF stage fetches new instruction
+  // IF stage fetches new instruction and places it in IF/ID register
   const instructionIndex = currentState.clockCycle;
   if (instructionIndex < instructions.length) {
     newPipeline[0].instruction = { ...instructions[instructionIndex] };
@@ -159,5 +161,6 @@ export function step(currentState: SimulationState, instructions: Instruction[])
     clockCycle: nextClockCycle,
     pipeline: newPipeline,
     history: newHistory,
+    wbHistory: newWbHistory,
   };
 }

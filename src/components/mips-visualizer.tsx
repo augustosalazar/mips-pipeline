@@ -55,7 +55,7 @@ const MipsVisualizer = () => {
     setSourceInstructions([]);
   };
 
-  const finished = simulation.pipeline.every(stage => stage.instruction === null) && isSimulating && simulation.clockCycle > 0 && simulation.clockCycle > sourceInstructions.length + 4;
+  const finished = simulation.pipeline.every(register => register.instruction === null) && isSimulating && simulation.clockCycle > 0 && simulation.clockCycle > sourceInstructions.length + 3;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -74,7 +74,7 @@ const MipsVisualizer = () => {
         <Card>
           <CardContent className="p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold font-headline">Pipeline Stages</h2>
+              <h2 className="text-2xl font-semibold font-headline">Pipeline Registers</h2>
               <div className="text-right">
                 <div className="font-mono text-lg">Clock Cycle: {simulation.clockCycle}</div>
                 {finished && <p className="text-primary font-semibold">Simulation Finished!</p>}
@@ -86,7 +86,7 @@ const MipsVisualizer = () => {
         <Card>
           <CardContent className="p-6">
             <h2 className="text-2xl font-semibold font-headline mb-4">Pipeline History</h2>
-            <PipelineHistory history={simulation.history} />
+            <PipelineHistory history={simulation.history} wbHistory={simulation.wbHistory} />
           </CardContent>
         </Card>
       </div>

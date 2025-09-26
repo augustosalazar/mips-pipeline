@@ -1,31 +1,53 @@
-import type { PipelineStage as PipelineStageType } from '@/lib/mips-simulator';
+import type { PipelineRegister as PipelineRegisterType } from '@/lib/mips-simulator';
 import { PipelineStage } from './pipeline-stage';
 import { ChevronRight } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
+import { cn } from '@/lib/utils';
 
 interface PipelineDisplayProps {
-  pipeline: PipelineStageType[];
+  pipeline: PipelineRegisterType[];
 }
+
+const STAGES = [
+    { name: 'IF', description: 'Fetch' },
+    { name: 'ID', description: 'Decode' },
+    { name: 'EX', description: 'Execute' },
+    { name: 'MEM', description: 'Memory' },
+    { name: 'WB', description: 'Write Back' }
+];
 
 export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
   return (
     <div className="relative overflow-x-auto pb-2">
-        <div className="flex items-stretch justify-between gap-1 md:gap-2 p-1">
-        {pipeline.map((stage, index) => (
-            <div key={stage.stage} className="flex grow items-center min-w-[5rem] md:min-w-0">
-                <div className="flex-1">
-                    <PipelineStage
-                        stageName={stage.stage}
-                        instruction={stage.instruction?.hex ?? '---'}
-                        fullInstruction={stage.instruction?.assembly ?? 'empty'}
-                        isActive={stage.instruction !== null}
-                    />
-                </div>
-                {index < pipeline.length - 1 && (
-                    <ChevronRight className="h-8 w-8 text-muted-foreground mx-1 md:mx-2 shrink-0" />
-                )}
-            </div>
-        ))}
+      <div className="flex items-center justify-between gap-1 md:gap-2 p-1">
+        {/* IF Stage */}
+        <div className="flex flex-col items-center text-center w-20 shrink-0">
+          <p className="font-bold">IF</p>
+          <p className="text-xs text-muted-foreground">Fetch</p>
         </div>
+        <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />
+
+        {/* Pipeline Registers */}
+        {pipeline.map((register, index) => (
+          <div key={register.name} className="flex grow items-center min-w-[5rem] md:min-w-0">
+            <div className="flex-1">
+              <PipelineStage
+                stageName={register.name}
+                instruction={register.instruction?.hex ?? '---'}
+                fullInstruction={register.instruction?.assembly ?? 'empty'}
+                isActive={register.instruction !== null}
+              />
+            </div>
+            <ChevronRight className="h-8 w-8 text-muted-foreground mx-1 md:mx-2 shrink-0" />
+            <div className="flex flex-col items-center text-center w-20 shrink-0">
+                <p className="font-bold">{STAGES[index + 1].name}</p>
+                <p className="text-xs text-muted-foreground">{STAGES[index + 1].description}</p>
+            </div>
+             {index < pipeline.length -1 && <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />}
+
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

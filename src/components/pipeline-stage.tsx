@@ -1,22 +1,22 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import type { PipelineRegisterName } from '@/lib/mips-simulator';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface PipelineStageProps {
-  stageName: 'IF' | 'ID' | 'EX' | 'MEM' | 'WB';
+  stageName: PipelineRegisterName;
   instruction: string;
   fullInstruction: string;
   isActive: boolean;
 }
 
-const stageDetails = {
-    IF: { name: 'Instruction Fetch' },
-    ID: { name: 'Instruction Decode' },
-    EX: { name: 'Execute' },
-    MEM: { name: 'Memory Access' },
-    WB: { name: 'Write Back' }
+const registerDetails: Record<PipelineRegisterName, { name: string }> = {
+    'IF/ID': { name: 'Instruction Fetch / Decode' },
+    'ID/EX': { name: 'Instruction Decode / Execute' },
+    'EX/MEM': { name: 'Execute / Memory Access' },
+    'MEM/WB': { name: 'Memory Access / Write Back' }
 }
 
 export function PipelineStage({ stageName, instruction, fullInstruction, isActive }: PipelineStageProps) {
@@ -44,7 +44,7 @@ export function PipelineStage({ stageName, instruction, fullInstruction, isActiv
           </Card>
         </TooltipTrigger>
         <TooltipContent>
-            <p className="font-semibold">{stageDetails[stageName].name}</p>
+            <p className="font-semibold">{registerDetails[stageName].name} Register</p>
             <p className="font-mono text-sm">{fullInstruction === '0x00000000' ? 'nop' : fullInstruction}</p>
         </TooltipContent>
       </Tooltip>
