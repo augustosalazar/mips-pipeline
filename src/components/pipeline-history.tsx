@@ -7,26 +7,24 @@ interface PipelineHistoryProps {
   wbHistory: (Instruction | null)[];
 }
 
-const stageDetails: Record<PipelineRegisterName | 'WB', { name: string }> = {
+const stageDetails: Record<PipelineRegisterName, { name: string }> = {
     'IF/ID': { name: 'IF/ID Register' },
     'ID/EX': { name: 'ID/EX Register' },
     'EX/MEM': { name: 'EX/MEM Register' },
     'MEM/WB': { name: 'MEM/WB Register' },
-    'WB': { name: 'Write Back Stage' }
 }
 
 export function PipelineHistory({ history, wbHistory }: PipelineHistoryProps) {
   const registers = Object.keys(history) as PipelineRegisterName[];
-  const allStages = [...registers, 'WB'] as const;
-
+  
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-      {allStages.map((stage) => (
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {registers.map((stage) => (
         <div key={stage}>
           <h3 className="font-semibold text-center mb-2">{stageDetails[stage].name}</h3>
           <ScrollArea className="h-64 rounded-md border bg-muted/20">
             <div className="p-2 space-y-1">
-              {(stage === 'WB' ? wbHistory : history[stage]).map((instr, index) => (
+              {history[stage].map((instr, index) => (
                 <div key={index}>
                     <div
                       className="font-mono text-xs p-1.5 rounded-sm text-center bg-background"

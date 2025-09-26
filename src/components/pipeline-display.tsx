@@ -13,7 +13,6 @@ const STAGES = [
     { name: 'ID', description: 'Decode' },
     { name: 'EX', description: 'Execute' },
     { name: 'MEM', description: 'Memory' },
-    { name: 'WB', description: 'Write Back' }
 ];
 
 export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
@@ -38,13 +37,16 @@ export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
                 isActive={register.instruction !== null}
               />
             </div>
-            <ChevronRight className="h-8 w-8 text-muted-foreground mx-1 md:mx-2 shrink-0" />
-            <div className="flex flex-col items-center text-center w-20 shrink-0">
-                <p className="font-bold">{STAGES[index + 1].name}</p>
-                <p className="text-xs text-muted-foreground">{STAGES[index + 1].description}</p>
-            </div>
-             {index < pipeline.length -1 && <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />}
-
+            {index < pipeline.length && (
+              <>
+                <ChevronRight className="h-8 w-8 text-muted-foreground mx-1 md:mx-2 shrink-0" />
+                <div className="flex flex-col items-center text-center w-20 shrink-0">
+                    <p className="font-bold">{STAGES[index + 1]?.name}</p>
+                    <p className="text-xs text-muted-foreground">{STAGES[index + 1]?.description}</p>
+                </div>
+                {index < pipeline.length - 1 && <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />}
+              </>
+            )}
           </div>
         ))}
       </div>
