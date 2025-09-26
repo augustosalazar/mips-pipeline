@@ -1,6 +1,5 @@
 import type { PipelineRegister as PipelineRegisterType } from '@/lib/mips-simulator';
 import { PipelineStage } from './pipeline-stage';
-import { ChevronRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
 
@@ -17,8 +16,17 @@ const STAGES = [
 
 export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
   return (
-    <div className="relative overflow-x-auto pb-2">
-      <div className="flex items-center justify-between gap-1 md:gap-2 p-1">
+    <div className="relative overflow-x-auto pb-2 pt-10">
+      <div className="flex items-center justify-between gap-1 md:gap-2 p-1 relative">
+        {/* Write-back path line */}
+        <div className="absolute top-0 left-[20%] right-[5%] h-8 border-b border-l border-r border-accent"></div>
+        <div className="absolute top-8 left-[20%] h-4 w-px bg-accent"></div>
+        <div className="absolute top-8 right-[5%] h-4 w-px bg-accent"></div>
+        <div className="absolute top-8 left-[calc(20%-0.5rem)] -translate-y-1/2 text-accent">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 rotate-90"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </div>
+
+
         {/* IF Stage */}
         <div className="flex flex-col items-center text-center w-20 shrink-0">
           <p className="font-bold">{STAGES[0].name}</p>
