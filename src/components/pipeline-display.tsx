@@ -9,10 +9,10 @@ interface PipelineDisplayProps {
 }
 
 const STAGES = [
-    { name: 'IF', description: 'Fetch' },
-    { name: 'ID', description: 'Decode' },
-    { name: 'EX', description: 'Execute' },
-    { name: 'MEM', description: 'Memory' },
+    { name: 'Instruction', description: 'Memory' },
+    { name: 'Register', description: 'Unit' },
+    { name: 'ALU', description: '' },
+    { name: 'Memory', description: '' },
 ];
 
 export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
@@ -21,8 +21,8 @@ export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
       <div className="flex items-center justify-between gap-1 md:gap-2 p-1">
         {/* IF Stage */}
         <div className="flex flex-col items-center text-center w-20 shrink-0">
-          <p className="font-bold">IF</p>
-          <p className="text-xs text-muted-foreground">Fetch</p>
+          <p className="font-bold">{STAGES[0].name}</p>
+          <p className="text-xs text-muted-foreground">{STAGES[0].description}</p>
         </div>
         <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />
 
@@ -37,14 +37,14 @@ export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
                 isActive={register.instruction !== null}
               />
             </div>
-            {index < pipeline.length && (
+            {index < pipeline.length - 1 && (
               <>
                 <ChevronRight className="h-8 w-8 text-muted-foreground mx-1 md:mx-2 shrink-0" />
                 <div className="flex flex-col items-center text-center w-20 shrink-0">
                     <p className="font-bold">{STAGES[index + 1]?.name}</p>
                     <p className="text-xs text-muted-foreground">{STAGES[index + 1]?.description}</p>
                 </div>
-                {index < pipeline.length - 1 && <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />}
+                <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />
               </>
             )}
           </div>
