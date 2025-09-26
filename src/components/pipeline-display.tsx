@@ -24,7 +24,6 @@ export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
           <p className="font-bold">{STAGES[0].name}</p>
           <p className="text-xs text-muted-foreground">{STAGES[0].description}</p>
         </div>
-        <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />
 
         {/* Pipeline Registers */}
         {pipeline.map((register, index) => (
@@ -39,12 +38,10 @@ export function PipelineDisplay({ pipeline }: PipelineDisplayProps) {
             </div>
             {index < pipeline.length - 1 && (
               <>
-                <ChevronRight className="h-8 w-8 text-muted-foreground mx-1 md:mx-2 shrink-0" />
-                <div className="flex flex-col items-center text-center w-20 shrink-0">
+                <div className="flex flex-col items-center text-center w-20 shrink-0 mx-1 md:mx-2">
                     <p className="font-bold">{STAGES[index + 1]?.name}</p>
                     <p className="text-xs text-muted-foreground">{STAGES[index + 1]?.description}</p>
                 </div>
-                <ChevronRight className="h-8 w-8 text-muted-foreground shrink-0" />
               </>
             )}
           </div>
